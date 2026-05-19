@@ -1,0 +1,646 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #07090c;
+  color: #f3eee6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(177, 41, 34, 0.16), rgba(7, 9, 12, 0) 300px),
+    radial-gradient(circle at top right, rgba(195, 147, 70, 0.12), transparent 360px),
+    #07090c;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+}
+
+.start-shell,
+.draft-shell,
+.final-shell {
+  width: min(1500px, calc(100vw - 32px));
+  margin: 0 auto;
+}
+
+.start-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(330px, 1.2fr);
+  gap: 34px;
+  align-items: center;
+  padding: 48px 0;
+}
+
+.start-copy h1,
+.topbar h1,
+.final-hero h1 {
+  margin: 0;
+  font-size: clamp(2.35rem, 5vw, 5.8rem);
+  line-height: 0.93;
+  letter-spacing: 0;
+}
+
+.start-copy p:not(.eyebrow),
+.final-copy p {
+  color: #c8bfb2;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 680px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #d7aa61;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.choice-grid,
+.role-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.choice-card,
+.role-button,
+.hero-row,
+.pick,
+.rec-card,
+.intelligence article,
+.pick-panel,
+.pick-column,
+.recommendations,
+.gameplay-card,
+.build-phase {
+  border: 1px solid rgba(243, 238, 230, 0.12);
+  background: linear-gradient(180deg, rgba(28, 32, 37, 0.92), rgba(13, 16, 21, 0.94));
+  color: inherit;
+  border-radius: 8px;
+  box-shadow: 0 22px 80px rgba(0, 0, 0, 0.25);
+}
+
+.choice-card {
+  min-height: 220px;
+  padding: 30px;
+  text-align: left;
+  border-left: 3px solid #a5362d;
+}
+
+.choice-card span {
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.choice-card small,
+.role-button span,
+.hero-row small,
+.pick small,
+.tagline,
+.limit-line,
+.locked-mode {
+  color: #b7ab9b;
+}
+
+.choice-card:hover,
+.role-button:hover,
+.hero-row:hover,
+.pick.filled:hover,
+.rec-card:hover {
+  border-color: rgba(215, 170, 97, 0.75);
+  transform: translateY(-1px);
+}
+
+.role-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.role-button {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 22px;
+  text-align: left;
+}
+
+.role-button strong {
+  font-size: 1.42rem;
+}
+
+.draft-shell {
+  padding: 24px 0 36px;
+}
+
+.topbar,
+.rec-header,
+.rec-title,
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-header {
+  min-height: 116px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(243, 238, 230, 0.1);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(8, 10, 13, 0.94), rgba(70, 20, 18, 0.36)),
+    url("https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg");
+  background-size: cover;
+}
+
+.ghost {
+  min-width: 96px;
+  height: 42px;
+  border: 1px solid rgba(243, 238, 230, 0.18);
+  border-radius: 8px;
+  color: #f3eee6;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.draft-layout {
+  display: grid;
+  grid-template-columns: 310px minmax(360px, 0.95fr) minmax(430px, 1.1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.enemy-only-layout {
+  grid-template-columns: 310px minmax(260px, 0.65fr) minmax(430px, 1.35fr);
+}
+
+.pick-panel,
+.pick-column,
+.recommendations {
+  padding: 14px;
+}
+
+.mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mode-toggle button,
+.locked-mode {
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #d8d0c4;
+}
+
+.locked-mode {
+  display: grid;
+  place-items: center;
+  border-color: rgba(215, 170, 97, 0.2);
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+.mode-toggle .active {
+  background: #d7aa61;
+  color: #12100b;
+  font-weight: 900;
+}
+
+.limit-line {
+  margin: 0 0 10px;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+#hero-search {
+  width: 100%;
+  height: 44px;
+  border: 1px solid rgba(243, 238, 230, 0.15);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #0b0f14;
+  color: #f3eee6;
+  margin-bottom: 12px;
+}
+
+#hero-search:disabled {
+  opacity: 0.6;
+}
+
+.hero-results,
+.rec-list,
+.pick-slots,
+.item-list {
+  display: grid;
+  gap: 8px;
+}
+
+.hero-row {
+  width: 100%;
+  min-height: 54px;
+  padding: 6px 10px 6px 6px;
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+}
+
+.hero-row img {
+  width: 72px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.single-board {
+  grid-template-columns: 1fr;
+}
+
+.pick-column h2,
+.recommendations h2,
+.intelligence h2,
+.gameplay-card h2,
+.build-phase h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
+.pick-column h2 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pick-column h2 span,
+.build-phase h3 span {
+  color: #d7aa61;
+  font-size: 0.82rem;
+}
+
+.pick {
+  min-height: 72px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.pick img {
+  width: 72px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.pick.empty {
+  display: grid;
+  place-items: center;
+  grid-template-columns: 1fr;
+  color: #7f7568;
+  border-style: dashed;
+}
+
+.pick.filled {
+  width: 100%;
+  text-align: left;
+}
+
+.pick.filled span {
+  font-weight: 850;
+}
+
+.pick-column.enemy .filled {
+  border-color: rgba(191, 55, 48, 0.55);
+}
+
+.pick-column.ally .filled {
+  border-color: rgba(80, 151, 139, 0.58);
+}
+
+.rec-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 34px 96px 1fr;
+  gap: 12px;
+  padding: 10px;
+  text-align: left;
+}
+
+.rec-portrait {
+  width: 96px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.rank {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  border-radius: 8px;
+  background: #d7aa61;
+  color: #15100a;
+  font-weight: 950;
+}
+
+.rec-card h3,
+.rec-card p {
+  margin: 0;
+}
+
+.rec-card p {
+  color: #d4cabe;
+  line-height: 1.42;
+  margin: 6px 0 8px;
+}
+
+.rec-title strong,
+.rec-header span {
+  color: #d7aa61;
+  font-weight: 900;
+}
+
+.tagline {
+  font-size: 0.78rem;
+}
+
+.empty-state {
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  color: #b7ab9b;
+  border: 1px dashed rgba(243, 238, 230, 0.18);
+  border-radius: 8px;
+}
+
+.intelligence,
+.final-grid,
+.build-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.intelligence {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.intelligence article,
+.gameplay-card,
+.build-phase {
+  padding: 16px;
+}
+
+.intelligence p,
+.gameplay-card li,
+.item-row p {
+  color: #c8bfb2;
+  line-height: 1.5;
+}
+
+.final-shell {
+  padding: 24px 0 40px;
+}
+
+.final-hero {
+  min-height: 460px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+  border: 1px solid rgba(243, 238, 230, 0.12);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(11,14,18,0.98), rgba(39,18,16,0.72));
+}
+
+.final-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+
+.final-art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(58vw, 760px);
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.72;
+  mask-image: linear-gradient(90deg, transparent 0%, black 36%);
+}
+
+.hero-score {
+  width: 190px;
+  min-height: 86px;
+  display: grid;
+  gap: 4px;
+  place-items: center;
+  margin: 18px 0;
+  border: 1px solid rgba(215, 170, 97, 0.45);
+  border-radius: 8px;
+  background: rgba(215, 170, 97, 0.1);
+}
+
+.hero-score span {
+  color: #c8bfb2;
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.hero-score strong {
+  font-size: 2.4rem;
+  color: #d7aa61;
+}
+
+.spell-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spell-strip img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(243, 238, 230, 0.12);
+}
+
+.item-row img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid rgba(243, 238, 230, 0.12);
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.final-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.gameplay-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.gameplay-card li + li {
+  margin-top: 8px;
+}
+
+.build-section {
+  margin-top: 20px;
+}
+
+.section-title {
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 1.7rem;
+}
+
+.source-link {
+  color: #d7aa61;
+  font-weight: 850;
+  text-decoration: none;
+  border: 1px solid rgba(215, 170, 97, 0.28);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(215, 170, 97, 0.08);
+}
+
+.build-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 70px;
+}
+
+.phase-reason {
+  margin: -4px 0 12px;
+  color: #b7ab9b;
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+
+.item-row strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.item-row p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1160px) {
+  .start-shell,
+  .draft-layout,
+  .enemy-only-layout,
+  .intelligence,
+  .final-grid,
+  .build-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .start-shell,
+  .draft-shell,
+  .final-shell {
+    width: min(100vw - 20px, 1500px);
+  }
+
+  .role-grid,
+  .board {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar,
+  .section-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ghost {
+    width: 100%;
+  }
+
+  .rec-card {
+    grid-template-columns: 34px 82px 1fr;
+  }
+
+  .rec-portrait {
+    width: 82px;
+    height: 52px;
+  }
+
+  .hero-row {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .hero-row small {
+    grid-column: 2;
+  }
+
+  .final-hero {
+    min-height: 520px;
+  }
+
+  .final-art {
+    width: 100%;
+    opacity: 0.36;
+    mask-image: linear-gradient(180deg, black 0%, transparent 82%);
+  }
+}

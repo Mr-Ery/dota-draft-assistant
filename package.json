@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/static-server.mjs",
+    "api": "node backend/server.mjs",
+    "ingest:heroes": "node scripts/full-hero-database-ingest.mjs",
+    "ingest:dotabuff": "node scripts/dotabuff-ingest.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

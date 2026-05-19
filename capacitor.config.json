@@ -1,0 +1,8 @@
+{
+  "appId": "com.dotadraft.assistant",
+  "appName": "Dota Draft Assistant",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  }
+}

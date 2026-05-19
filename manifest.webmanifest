@@ -1,0 +1,18 @@
+{
+  "name": "Dota 2 Draft Assistant",
+  "short_name": "Dota Draft",
+  "description": "Live Dota 2 drafting assistant with role-specific recommendations.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07090c",
+  "theme_color": "#0b0f14",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/axe.png",
+      "sizes": "512x288",
+      "type": "image/png"
+    }
+  ]
+}

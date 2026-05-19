@@ -350,8 +350,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Razor",
     "roles": [
-      "Position 3",
-      "Position 4"
+      "Position 3"
     ],
     "damage": "magical",
     "tags": [
@@ -372,7 +371,7 @@ export const GENERATED_HEROES = [
       "physical"
     ],
     "patchScore": 5,
-    "summary": "Razor is a P3/P4 option built around scaling, burst, objective pressure, frontline; item and advice output changes with enemy picks."
+    "summary": "Razor is a P3 option built around scaling, burst, objective pressure, frontline; item and advice output changes with enemy picks."
   },
   {
     "name": "Sand King",
@@ -564,9 +563,8 @@ export const GENERATED_HEROES = [
   {
     "name": "Kunkka",
     "roles": [
-      "Position 3",
-      "Position 4",
-      "Position 5"
+      "Position 2",
+      "Position 3"
     ],
     "damage": "magical",
     "tags": [
@@ -587,7 +585,7 @@ export const GENERATED_HEROES = [
       "physical"
     ],
     "patchScore": 5,
-    "summary": "Kunkka is a P3/P4/P5 option built around scaling, burst, control, frontline, utility; item and advice output changes with enemy picks."
+    "summary": "Kunkka is a P2/P3 option built around scaling, burst, control, frontline, utility; item and advice output changes with enemy picks."
   },
   {
     "name": "Lina",
@@ -1093,7 +1091,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Pugna",
     "roles": [
-      "Position 4"
+      "Position 2"
     ],
     "damage": "magical",
     "tags": [
@@ -1111,7 +1109,7 @@ export const GENERATED_HEROES = [
       "weak-lanes"
     ],
     "patchScore": 5,
-    "summary": "Pugna is a P4 option built around burst, objective pressure; item and advice output changes with enemy picks."
+    "summary": "Pugna is a P2 option built around burst, objective pressure; item and advice output changes with enemy picks."
   },
   {
     "name": "Templar Assassin",
@@ -1487,7 +1485,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Broodmother",
     "roles": [
-      "Position 4"
+      "Position 2"
     ],
     "damage": "magical",
     "tags": [
@@ -1507,7 +1505,7 @@ export const GENERATED_HEROES = [
       "weak-lanes"
     ],
     "patchScore": 5,
-    "summary": "Broodmother is a P4 option built around scaling, burst, objective pressure; item and advice output changes with enemy picks."
+    "summary": "Broodmother is a P2 option built around scaling, burst, objective pressure; item and advice output changes with enemy picks."
   },
   {
     "name": "Bounty Hunter",
@@ -1583,8 +1581,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Batrider",
     "roles": [
-      "Position 3",
-      "Position 4"
+      "Position 3"
     ],
     "damage": "mixed",
     "tags": [
@@ -1603,7 +1600,7 @@ export const GENERATED_HEROES = [
       "low-mobility"
     ],
     "patchScore": 5,
-    "summary": "Batrider is a P3/P4 option built around control; item and advice output changes with enemy picks."
+    "summary": "Batrider is a P3 option built around control; item and advice output changes with enemy picks."
   },
   {
     "name": "Chen",
@@ -1859,7 +1856,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Outworld Devourer",
     "roles": [
-      "Position 4"
+      "Position 1"
     ],
     "damage": "magical",
     "tags": [
@@ -1879,7 +1876,7 @@ export const GENERATED_HEROES = [
       "low-hp"
     ],
     "patchScore": 5,
-    "summary": "Outworld Devourer is a P4 option built around scaling, burst, control; item and advice output changes with enemy picks."
+    "summary": "Outworld Devourer is a P1 option built around scaling, burst, control; item and advice output changes with enemy picks."
   },
   {
     "name": "Lycan",
@@ -2011,8 +2008,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Meepo",
     "roles": [
-      "Position 3",
-      "Position 4"
+      "Position 2"
     ],
     "damage": "magical",
     "tags": [
@@ -2036,7 +2032,7 @@ export const GENERATED_HEROES = [
       "low-mobility"
     ],
     "patchScore": 5,
-    "summary": "Meepo is a P3/P4 option built around scaling, burst, control, objective pressure; item and advice output changes with enemy picks."
+    "summary": "Meepo is a P2 option built around scaling, burst, control, objective pressure; item and advice output changes with enemy picks."
   },
   {
     "name": "Treant Protector",
@@ -3128,7 +3124,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Kez",
     "roles": [
-      "Position 4"
+      "Position 2"
     ],
     "damage": "physical",
     "tags": [
@@ -3146,7 +3142,7 @@ export const GENERATED_HEROES = [
       "mobility"
     ],
     "patchScore": 5,
-    "summary": "Kez is a P4 option built around scaling, control; item and advice output changes with enemy picks."
+    "summary": "Kez is a P2 option built around scaling, control; item and advice output changes with enemy picks."
   },
   {
     "name": "Largo",

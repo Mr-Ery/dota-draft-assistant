@@ -47,6 +47,8 @@ const canonicalRoleOverrides = {
   "void-spirit": ["Position 2"],
   "ember-spirit": ["Position 2"],
   "huskar": ["Position 2"],
+  "kunkka": ["Position 2", "Position 3"],
+  "meepo": ["Position 2"],
   "shadow-fiend": ["Position 2"],
   "zeus": ["Position 2"],
 
@@ -151,9 +153,10 @@ function mapRoles(hero) {
 
   const set = new Set();
   if (hero.roles.includes("Durable") || hero.roles.includes("Initiator")) set.add("Position 3");
-  if (hero.roles.includes("Disabler") || hero.roles.includes("Nuker") || hero.roles.includes("Initiator")) set.add("Position 4");
+  if (hero.roles.includes("Support")) set.add("Position 4");
   if (hero.roles.includes("Support")) set.add("Position 5");
-  if (!set.size) set.add(hero.attackType === "Melee" ? "Position 3" : "Position 4");
+  if (!set.size && hero.roles.includes("Carry")) set.add(hero.attackType === "Melee" ? "Position 2" : "Position 1");
+  if (!set.size) set.add(hero.attackType === "Melee" ? "Position 3" : "Position 2");
   return [...set].slice(0, 3);
 }
 

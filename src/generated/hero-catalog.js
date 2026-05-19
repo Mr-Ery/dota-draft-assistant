@@ -563,8 +563,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Kunkka",
     "roles": [
-      "Position 2",
-      "Position 3"
+      "Position 2"
     ],
     "damage": "magical",
     "tags": [
@@ -585,7 +584,7 @@ export const GENERATED_HEROES = [
       "physical"
     ],
     "patchScore": 5,
-    "summary": "Kunkka is a P2/P3 option built around scaling, burst, control, frontline, utility; item and advice output changes with enemy picks."
+    "summary": "Kunkka is a P2 option built around scaling, burst, control, frontline, utility; item and advice output changes with enemy picks."
   },
   {
     "name": "Lina",

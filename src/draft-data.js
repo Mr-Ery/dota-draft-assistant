@@ -1,4 +1,5 @@
 import { GENERATED_HEROES } from "./generated/hero-catalog.js";
+import { canonicalRolesFor } from "./data/canonical-roles.js";
 
 export const philosophies = [
   {
@@ -157,5 +158,15 @@ function matchup(advantage, lane, intensity, summary) {
 function mergeHeroes(curated, generated) {
   const byName = new Map(generated.map((hero) => [hero.name, hero]));
   for (const hero of curated) byName.set(hero.name, { ...byName.get(hero.name), ...hero });
-  return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+  return [...byName.values()].map(applyCanonicalRoles).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function applyCanonicalRoles(hero) {
+  const roles = canonicalRolesFor(hero.name);
+  if (!roles) return hero;
+  return {
+    ...hero,
+    roles,
+    summary: hero.summary.replace(/is a P[0-9](\/P[0-9])*( option)?/, `is a ${roles.map((role) => role.replace("Position ", "P")).join("/")} option`)
+  };
 }

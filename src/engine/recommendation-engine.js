@@ -177,8 +177,8 @@ function roleFit(hero, role) {
 }
 
 function finalizeScore(rawScore) {
-  if (rawScore <= 88) return Math.max(0, Math.round(rawScore));
-  return Math.min(99, Math.round(88 + (rawScore - 88) * 0.28));
+  if (rawScore <= 82) return Math.max(0, Math.round(rawScore));
+  return Math.min(94, Math.round(82 + (rawScore - 82) * 0.18));
 }
 
 function tagSet(names) {

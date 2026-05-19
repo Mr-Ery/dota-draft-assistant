@@ -49,7 +49,7 @@ const canonicalRoleOverrides = {
   "void-spirit": ["Position 2"],
   "ember-spirit": ["Position 2"],
   "huskar": ["Position 2"],
-  "kunkka": ["Position 2", "Position 3"],
+  "kunkka": ["Position 2"],
   "meepo": ["Position 2"],
   "shadow-fiend": ["Position 2"],
   "zeus": ["Position 2"],

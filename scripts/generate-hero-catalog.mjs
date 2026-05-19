@@ -43,6 +43,8 @@ const canonicalRoleOverrides = {
   "storm-spirit": ["Position 2"],
   "invoker": ["Position 2"],
   "lina": ["Position 2", "Position 1"],
+  "outworld-devourer": ["Position 2"],
+  "outworld-destroyer": ["Position 2"],
   "tinker": ["Position 2"],
   "void-spirit": ["Position 2"],
   "ember-spirit": ["Position 2"],

@@ -1,4 +1,4 @@
-const CACHE_NAME = "dota-draft-assistant-v5";
+const CACHE_NAME = "dota-draft-assistant-v6";
 const APP_SHELL = [
   "/",
   "/index.html",

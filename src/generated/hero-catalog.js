@@ -1856,7 +1856,7 @@ export const GENERATED_HEROES = [
   {
     "name": "Outworld Devourer",
     "roles": [
-      "Position 1"
+      "Position 2"
     ],
     "damage": "magical",
     "tags": [
@@ -1876,7 +1876,7 @@ export const GENERATED_HEROES = [
       "low-hp"
     ],
     "patchScore": 5,
-    "summary": "Outworld Devourer is a P1 option built around scaling, burst, control; item and advice output changes with enemy picks."
+    "summary": "Outworld Devourer is a P2 option built around scaling, burst, control; item and advice output changes with enemy picks."
   },
   {
     "name": "Lycan",

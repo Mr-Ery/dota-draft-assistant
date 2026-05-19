@@ -21,12 +21,12 @@ export function scoreHero(hero, draft) {
   if (pickedSet(draft).has(hero.name)) return null;
 
   const details = [];
-  let score = 45 + hero.patchScore;
+  let score = 52 + hero.patchScore * 0.8;
 
   for (const enemy of draft.enemies) {
     const counter = COUNTERS[enemy]?.[hero.name];
     if (counter) {
-      score += counter.advantage * 1.8 + counter.lane * 0.7 + counter.intensity * 3;
+      score += counter.advantage * 0.9 + counter.lane * 0.35 + counter.intensity * 1.25;
       details.push(`${counter.summary} vs ${enemy}`);
     } else {
       score += enemyOnlyTagScore(hero, enemy);
@@ -37,7 +37,7 @@ export function scoreHero(hero, draft) {
     for (const ally of draft.allies) {
       const combo = comboScore(hero.name, ally);
       if (combo) {
-        score += combo.score;
+        score += combo.score * 0.45;
         details.push(combo.summary);
       }
       score += allyTagScore(hero, ally);
@@ -49,10 +49,11 @@ export function scoreHero(hero, draft) {
   }
 
   score += roleFit(hero, draft.role);
+  score -= draft.enemies.length * 0.8;
 
   return {
     hero,
-    score: Math.max(0, Math.min(100, Math.round(score))),
+    score: finalizeScore(score),
     details: details.slice(0, 5),
     analysis: explainHero(hero, draft, details)
   };
@@ -123,9 +124,9 @@ function enemyOnlyTagScore(hero, enemyName) {
   const enemy = getHero(enemyName);
   if (!enemy) return 0;
   let score = 0;
-  if (enemy.vulnerableTo.some((tag) => hero.tags.includes(tag))) score += 9;
-  if (hero.answers.some((tag) => enemy.tags.includes(tag))) score += 7;
-  if (hero.damage !== enemy.damage) score += 1;
+  if (enemy.vulnerableTo.some((tag) => hero.tags.includes(tag))) score += 3.8;
+  if (hero.answers.some((tag) => enemy.tags.includes(tag))) score += 3.2;
+  if (hero.damage !== enemy.damage) score += 0.6;
   return score;
 }
 
@@ -133,10 +134,10 @@ function allyTagScore(hero, allyName) {
   const ally = getHero(allyName);
   if (!ally) return 0;
   let score = 0;
-  if (hero.tags.includes("initiation") && ally.tags.includes("teamfight")) score += 5;
-  if (hero.tags.includes("save") && ally.tags.includes("scaling")) score += 4;
-  if (hero.tags.includes("disable") && ally.tags.includes("burst")) score += 4;
-  if (hero.damage !== ally.damage) score += 2;
+  if (hero.tags.includes("initiation") && ally.tags.includes("teamfight")) score += 2.5;
+  if (hero.tags.includes("save") && ally.tags.includes("scaling")) score += 2.1;
+  if (hero.tags.includes("disable") && ally.tags.includes("burst")) score += 2;
+  if (hero.damage !== ally.damage) score += 0.8;
   return score;
 }
 
@@ -153,26 +154,31 @@ function teamBalanceScore(candidate, allies) {
   const tags = new Set(team.flatMap((hero) => hero.tags));
 
   if (damageTypes.size > 1) {
-    score += 5;
+    score += 2.2;
     details.push("Improves damage type balance.");
   }
   if (tags.has("disable") && tags.has("initiation")) {
-    score += 6;
+    score += 2.8;
     details.push("Adds catch plus initiation structure.");
   }
   if (tags.has("tower") || tags.has("roshan")) {
-    score += 4;
+    score += 1.8;
     details.push("Adds objective pressure.");
   }
   if (!tagSet(allies).has("frontline") && candidate.tags.includes("frontline")) {
-    score += 7;
+    score += 3;
     details.push("Solves frontline weakness.");
   }
   return { score, details };
 }
 
 function roleFit(hero, role) {
-  return roleWeights[role].reduce((total, tag) => total + (hero.tags.includes(tag) ? 3 : 0), 0);
+  return roleWeights[role].reduce((total, tag) => total + (hero.tags.includes(tag) ? 1.8 : 0), 0);
+}
+
+function finalizeScore(rawScore) {
+  if (rawScore <= 88) return Math.max(0, Math.round(rawScore));
+  return Math.min(99, Math.round(88 + (rawScore - 88) * 0.28));
 }
 
 function tagSet(names) {

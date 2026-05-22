@@ -407,8 +407,8 @@ img {
 }
 
 .intelligence,
-.final-grid,
-.build-grid {
+.build-grid,
+.critical-grid {
   display: grid;
   gap: 16px;
 }
@@ -513,20 +513,6 @@ img {
   background: rgba(0, 0, 0, 0.34);
 }
 
-.final-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 16px;
-}
-
-.gameplay-card ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.gameplay-card li + li {
-  margin-top: 8px;
-}
-
 .build-section {
   margin-top: 20px;
 }
@@ -553,6 +539,45 @@ img {
 
 .build-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.critical-section {
+  margin-top: 22px;
+}
+
+.critical-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.critical-item {
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(215, 170, 97, 0.26);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(40, 31, 19, 0.78), rgba(13, 16, 21, 0.94));
+}
+
+.critical-item img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  padding: 3px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.critical-item h3 {
+  margin: 0 0 5px;
+}
+
+.critical-item p {
+  margin: 0;
+  color: #d6cabe;
+  line-height: 1.45;
 }
 
 .item-row {
@@ -585,8 +610,8 @@ img {
   .draft-layout,
   .enemy-only-layout,
   .intelligence,
-  .final-grid,
-  .build-grid {
+  .build-grid,
+  .critical-grid {
     grid-template-columns: 1fr;
   }
 

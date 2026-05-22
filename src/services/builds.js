@@ -198,6 +198,43 @@ export function buildSummary(hero, role, draft = {}) {
   return lines.slice(0, 4);
 }
 
+export function criticalItemsForGame(hero, role, draft = {}) {
+  const context = analyzeEnemies((draft.enemies || []).map(getHero).filter(Boolean));
+  const required = [];
+  if (context.hasSilence || context.hasCatch) {
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("black_king_bar", "Required if fights are decided by silence, stun chains, or burst initiation."));
+    if (hero.tags.includes("scaling") || hero.vulnerableTo.includes("silence")) required.push(requiredItem("manta", "Strong dispel option when enemy control is silence/root based."));
+    required.push(requiredItem("linkens_sphere", "Consider it when one single-target spell starts the enemy kill chain."));
+  }
+  if (context.hasHighMagic) {
+    if (["Position 3", "Position 4", "Position 5"].includes(role)) required.push(requiredItem("pipe", "Important team item against heavy magic damage."));
+    if (["Position 4", "Position 5"].includes(role)) required.push(requiredItem("glimmer_cape", "Cheap save against magic burst and targeted jumps."));
+  }
+  if (context.hasPhysical) {
+    if (role === "Position 3") required.push(requiredItem("crimson_guard", "Important against physical pressure, summons, or illusion chip damage."));
+    if (["Position 4", "Position 5"].includes(role)) required.push(requiredItem("pavise", "Cheap save when enemy physical burst threatens your core."));
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("butterfly", "Late defensive damage item if enemy lacks reliable true strike."));
+  }
+  if (context.hasIllusions) {
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("mjollnir", "Best carry-side answer when illusion waves must be cleared quickly."));
+    required.push(requiredItem("shivas_guard", "Armor, anti-heal, and AoE control against illusion or summon pressure."));
+  }
+  if (context.hasHealing) {
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("eye_of_skadi", "High priority against healing, lifesteal, and long sustain fights."));
+    required.push(requiredItem("spirit_vessel", "Team needs one Vessel if enemy regen/heal is the core problem."));
+  }
+  if (context.hasEvasion) {
+    required.push(requiredItem("monkey_king_bar", "Needed when evasion prevents your physical damage from connecting."));
+  }
+  if (!required.length) {
+    required.push(requiredItem("black_king_bar", "Default safety item if enemy disable or burst becomes the main issue."));
+  }
+  return dedupeRequired(required).slice(0, 6).map((item) => ({
+    ...item,
+    name: titleItem(item.slug)
+  }));
+}
+
 function build(starting, lane, early, core, situational, luxury, identity) {
   return { starting, lane, early, core, situational, luxury, identity };
 }
@@ -276,6 +313,16 @@ function matchupAdjustments(hero, context, draft) {
 
 function adjust(phase, items, reason) {
   return { phase, items, reason };
+}
+
+function requiredItem(slug, reason) {
+  return { slug, reason };
+}
+
+function dedupeRequired(items) {
+  const bySlug = new Map();
+  for (const item of items) if (!bySlug.has(item.slug)) bySlug.set(item.slug, item);
+  return [...bySlug.values()];
 }
 
 function cloneProfile(profile) {

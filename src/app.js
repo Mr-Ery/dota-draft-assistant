@@ -9,7 +9,7 @@ import {
   heroProfileCandidates,
   itemIconCandidates
 } from "./services/assets.js";
-import { buildSummary, itemBuild } from "./services/builds.js";
+import { criticalItemsForGame, itemBuild } from "./services/builds.js";
 
 const state = {
   step: 1,
@@ -256,6 +256,7 @@ function renderFinal() {
     return renderDraft();
   }
   const build = itemBuild(report.hero, state.role, state);
+  const criticalItems = criticalItemsForGame(report.hero, state.role, state);
   const abilities = heroAbilities(report.hero.name);
   const profile = heroProfileCandidates(report.hero.name);
 
@@ -275,21 +276,6 @@ function renderFinal() {
           ${abilities.length ? `<div class="spell-strip">${abilities.map((ability) => assetImg(abilityIconCandidates(ability), ability.replaceAll("_", " "))).join("")}</div>` : ""}
         </div>
       </header>
-
-      <section class="final-grid">
-        ${renderAnalysisBlock("Matchup Explanation", report.matchupExplanation?.length ? report.matchupExplanation : [report.hero.summary])}
-        ${renderAnalysisBlock("Build Logic", buildSummary(report.hero, state.role, state))}
-        ${renderAnalysisBlock("Strengths", report.strengths)}
-        ${renderAnalysisBlock("Weaknesses", report.weaknesses)}
-        ${renderAnalysisBlock("Timing Windows", report.timings)}
-        ${renderAnalysisBlock("Threat Analysis", report.threats)}
-        <article class="gameplay-card">
-          <h2>Gameplay Advice</h2>
-          <ul>
-            ${(report.gameplayPlan?.length ? report.gameplayPlan : gameplayAdvice(report.hero, state)).map((line) => `<li>${line}</li>`).join("")}
-          </ul>
-        </article>
-      </section>
 
       <section class="build-section">
         <div class="section-title">
@@ -317,6 +303,24 @@ function renderFinal() {
           `).join("")}
         </div>
       </section>
+
+      <section class="critical-section">
+        <div class="section-title">
+          <p class="eyebrow">Required in this game</p>
+          <h2>Enemy-Driven Items</h2>
+        </div>
+        <div class="critical-grid">
+          ${criticalItems.map((item) => `
+            <article class="critical-item">
+              ${assetImg(itemIconCandidates(item.slug), item.name)}
+              <div>
+                <h3>${item.name}</h3>
+                <p>${item.reason}</p>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      </section>
     </section>
   `;
 
@@ -325,15 +329,6 @@ function renderFinal() {
     state.finalHero = null;
     renderDraft();
   });
-}
-
-function renderAnalysisBlock(title, rows) {
-  return `
-    <article class="gameplay-card">
-      <h2>${title}</h2>
-      <ul>${rows.map((row) => `<li>${row}</li>`).join("")}</ul>
-    </article>
-  `;
 }
 
 function addPick(name, side) {

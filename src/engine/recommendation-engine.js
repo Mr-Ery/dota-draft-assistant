@@ -1,4 +1,5 @@
 import { COUNTERS, COMBOS, HEROES } from "../draft-data.js";
+import { counterRuleFor } from "../data/counter-pick-rules.js";
 
 const roleWeights = {
   "Position 1": ["scaling", "roshan", "tower"],
@@ -30,6 +31,10 @@ export function scoreHero(hero, draft) {
       details.push(`${counter.summary} vs ${enemy}`);
     } else {
       score += enemyOnlyTagScore(hero, enemy);
+    }
+    if (counterRuleFor(enemy, hero.name)) {
+      score += 5.5;
+      details.push(`${hero.name} is a known counter-pick pattern into ${enemy}.`);
     }
   }
 

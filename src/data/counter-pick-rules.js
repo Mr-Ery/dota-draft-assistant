@@ -1,0 +1,42 @@
+export const COUNTER_PICK_RULES = {
+  Abaddon: ["Axe", "Doom", "Viper", "Slark", "Outworld Devourer", "Lina", "Lion"],
+  Alchemist: ["Huskar", "Brewmaster", "Terrorblade", "Slark", "Clinkz", "Outworld Devourer"],
+  "Ancient Apparition": ["Necrophos", "Huskar"],
+  "Anti-Mage": ["Huskar", "Meepo", "Axe", "Slardar", "Troll Warlord"],
+  "Arc Warden": ["Phantom Lancer", "Naga Siren", "Broodmother", "Meepo", "Leshrac"],
+  Axe: ["Timbersaw", "Viper", "Spectre", "Ursa", "Broodmother"],
+  Bristleback: ["Timbersaw", "Silencer", "Viper", "Huskar"],
+  Broodmother: ["Earthshaker", "Sven", "Kunkka", "Huskar", "Axe"],
+  "Chaos Knight": ["Leshrac", "Earthshaker", "Underlord"],
+  Clinkz: ["Phantom Lancer", "Broodmother", "Naga Siren", "Meepo", "Chaos Knight"],
+  Doom: ["Puck", "Queen of Pain", "Storm Spirit", "Void Spirit", "Ember Spirit"],
+  Earthshaker: ["Puck", "Storm Spirit", "Queen of Pain", "Phantom Lancer", "Naga Siren"],
+  Juggernaut: ["Bristleback", "Timbersaw", "Necrophos"],
+  "Legion Commander": ["Slark", "Viper", "Abaddon"],
+  Leshrac: ["Phantom Lancer", "Naga Siren", "Chaos Knight", "Terrorblade"],
+  Meepo: ["Earthshaker", "Sven", "Kunkka", "Shadow Fiend", "Huskar"],
+  Morphling: ["Lion", "Lina", "Doom", "Shadow Shaman"],
+  "Naga Siren": ["Leshrac", "Jakiro", "Earthshaker", "Underlord"],
+  "Outworld Devourer": ["Nyx Assassin", "Phantom Lancer", "Naga Siren"],
+  "Phantom Assassin": ["Timbersaw", "Bristleback", "Axe", "Pudge", "Templar Assassin"],
+  "Phantom Lancer": ["Leshrac", "Underlord", "Tidehunter", "Sand King", "Timbersaw"],
+  Pudge: ["Puck", "Queen of Pain", "Sniper", "Drow Ranger"],
+  "Queen of Pain": ["Huskar", "Puck", "Ember Spirit", "Medusa"],
+  Riki: ["Bounty Hunter", "Slardar", "Zeus", "Disruptor"],
+  "Shadow Fiend": ["Medusa", "Templar Assassin", "Dragon Knight"],
+  Slark: ["Doom", "Silencer", "Lion", "Shadow Shaman"],
+  Sniper: ["Storm Spirit", "Spirit Breaker", "Broodmother"],
+  Spectre: ["Chen", "Undying", "Meepo", "Lycan"],
+  "Storm Spirit": ["Doom", "Silencer", "Lion", "Shadow Shaman", "Sniper"],
+  Sven: ["Phantom Lancer", "Chaos Knight", "Naga Siren"],
+  "Templar Assassin": ["Phantom Assassin", "Sven", "Ursa"],
+  Terrorblade: ["Leshrac", "Jakiro", "Earthshaker", "Underlord"],
+  Timbersaw: ["Huskar", "Viper", "Lina", "Lion"],
+  "Troll Warlord": ["Shadow Shaman", "Lion", "Dazzle", "Oracle"],
+  Ursa: ["Naga Siren", "Razor", "Slardar", "Bristleback", "Viper"],
+  "Wraith King": ["Anti-Mage", "Timbersaw", "Slark", "Broodmother"]
+};
+
+export function counterRuleFor(enemyName, candidateName) {
+  return COUNTER_PICK_RULES[enemyName]?.includes(candidateName) || false;
+}

@@ -236,7 +236,7 @@ function renderRecommendation(rec, index) {
 }
 
 function renderStars(stars) {
-  return `<div class="stars" aria-label="${stars} of 5 stars">${Array.from({ length: 5 }).map((_, index) => `<span class="${index < stars ? "filled" : ""}">★</span>`).join("")}</div>`;
+  return `<div class="stars" aria-label="${stars} of 5 stars">${Array.from({ length: 5 }).map((_, index) => `<span class="${index < stars ? "filled" : ""}">&#9733;</span>`).join("")}</div>`;
 }
 
 function renderEnemyBreakdown(rows = []) {

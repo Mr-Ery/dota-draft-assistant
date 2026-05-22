@@ -1,5 +1,6 @@
 import { getHero } from "../engine/recommendation-engine.js";
 import { archetypeForHero } from "../data/hero-build-archetypes.js";
+import { proTrackerStyleBuildFor } from "../data/protracker-builds.js";
 
 const itemText = {
   tango: "Sustain the first waves.",
@@ -76,7 +77,23 @@ const itemText = {
   kaya_and_yasha: "Spell tempo and movement speed.",
   octarine_core: "Cooldown reduction for constant spell output.",
   ethereal_blade: "Magic burst and physical protection.",
-  dagon: "Pickoff burst."
+  dagon: "Pickoff burst.",
+  moon_shard: "Ultra-late attack speed conversion.",
+  swift_blink: "Late-game jump, burst, and repositioning.",
+  ghost: "Temporary protection from physical burst.",
+  aeon_disk: "Stops instant burst or chain-disable deaths.",
+  rod_of_atos: "Root setup for follow-up spells.",
+  gleipnir: "AoE root and wave control.",
+  helm_of_the_dominator: "Objective aura and summon tempo.",
+  mask_of_madness: "Farming and early damage acceleration.",
+  hand_of_midas: "Greedy economy acceleration.",
+  witch_blade: "Tempo damage and slow.",
+  urn_of_shadows: "Early gank sustain and Vessel setup.",
+  orb_of_corrosion: "Lane chase and armor pressure.",
+  slippers: "Cheap agility for early lane stats.",
+  shadow_blade: "Pickoff entry and repositioning.",
+  crystalis: "Cheap critical damage spike.",
+  rapier: "Extreme late-game damage gamble."
 };
 
 const heroProfiles = {
@@ -161,17 +178,9 @@ const alias = {
 };
 
 export function itemBuild(hero, role, draft = {}) {
-  const profile = cloneProfile(heroProfiles[hero.name] || profileFromArchetype(hero.name) || roleFallbacks[role]);
-  const enemyHeroes = (draft.enemies || []).map(getHero).filter(Boolean);
-  const context = analyzeEnemies(enemyHeroes);
-  const adjustments = matchupAdjustments(hero, context, draft);
-
-  for (const adjustment of adjustments) {
-    const target = profile[adjustment.phase] || profile.situational;
-    for (const item of adjustment.items) {
-      if (!hasItem(profile, item)) target.push(item);
-    }
-  }
+  const profile = cloneProfile(proTrackerStyleBuildFor(hero.name) || heroProfiles[hero.name] || profileFromArchetype(hero.name) || roleFallbacks[role]);
+  const context = analyzeEnemies([]);
+  const adjustments = [];
 
   return phaseOrder.map((phase, phaseIndex) => ({
     phase,
@@ -187,7 +196,7 @@ export function itemBuild(hero, role, draft = {}) {
 }
 
 export function buildSummary(hero, role, draft = {}) {
-  const profile = heroProfiles[hero.name] || profileFromArchetype(hero.name) || roleFallbacks[role];
+  const profile = proTrackerStyleBuildFor(hero.name) || heroProfiles[hero.name] || profileFromArchetype(hero.name) || roleFallbacks[role];
   const context = analyzeEnemies((draft.enemies || []).map(getHero).filter(Boolean));
   const lines = [profile.identity];
   if (context.hasSilence) lines.push("Enemy silence means dispel/BKB/Linken timing matters more.");
@@ -202,32 +211,53 @@ export function criticalItemsForGame(hero, role, draft = {}) {
   const context = analyzeEnemies((draft.enemies || []).map(getHero).filter(Boolean));
   const required = [];
   if (context.hasSilence || context.hasCatch) {
-    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("black_king_bar", "Required if fights are decided by silence, stun chains, or burst initiation."));
-    if (hero.tags.includes("scaling") || hero.vulnerableTo.includes("silence")) required.push(requiredItem("manta", "Strong dispel option when enemy control is silence/root based."));
-    required.push(requiredItem("linkens_sphere", "Consider it when one single-target spell starts the enemy kill chain."));
+    const control = enemyNamesBy(context, (enemy) =>
+      ["Axe", "Batrider", "Beastmaster", "Doom", "Lion", "Shadow Shaman", "Puck", "Storm Spirit", "Spirit Breaker"].includes(enemy.name) ||
+      enemy.tags.some((tag) => ["silence", "catch", "disable", "initiation"].includes(tag))
+    );
+    if (["Position 1", "Position 2"].includes(role)) {
+      required.push(requiredItem("black_king_bar", `Buy this because ${listNames(control)} can start fights or chain-control ${hero.name} before damage comes out.`));
+    }
+    if (hero.tags.includes("scaling") || hero.vulnerableTo.includes("silence")) {
+      required.push(requiredItem("manta", `Useful only if ${listNames(control)} creates dispellable silence/root problems; skip it if BKB or Linken solves the real threat better.`));
+    }
+    required.push(requiredItem("linkens_sphere", `Consider this specifically against single-target fight starters from ${listNames(control)}, especially Batrider, Doom, Beastmaster, or Legion-style initiation.`));
   }
   if (context.hasHighMagic) {
-    if (["Position 3", "Position 4", "Position 5"].includes(role)) required.push(requiredItem("pipe", "Important team item against heavy magic damage."));
-    if (["Position 4", "Position 5"].includes(role)) required.push(requiredItem("glimmer_cape", "Cheap save against magic burst and targeted jumps."));
+    const magic = enemyNamesBy(context, (enemy) =>
+      enemy.tags.some((tag) => ["burst", "magical", "teamfight", "damage-over-time"].includes(tag)) ||
+      ["Ancient Apparition", "Batrider", "Leshrac", "Lina", "Zeus", "Skywrath Mage"].includes(enemy.name)
+    );
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("black_king_bar", `Important because ${listNames(magic)} can turn fights with magic burst or spell damage before ${hero.name} finishes targets.`));
+    if (["Position 3", "Position 4", "Position 5"].includes(role)) required.push(requiredItem("pipe", `Team item priority because ${listNames(magic)} creates heavy magic damage windows.`));
+    if (["Position 4", "Position 5"].includes(role)) required.push(requiredItem("glimmer_cape", `Cheap save against magic burst from ${listNames(magic)}.`));
   }
   if (context.hasPhysical) {
-    if (role === "Position 3") required.push(requiredItem("crimson_guard", "Important against physical pressure, summons, or illusion chip damage."));
-    if (["Position 4", "Position 5"].includes(role)) required.push(requiredItem("pavise", "Cheap save when enemy physical burst threatens your core."));
-    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("butterfly", "Late defensive damage item if enemy lacks reliable true strike."));
+    const physical = enemyNamesBy(context, (enemy) =>
+      enemy.tags.some((tag) => ["physical", "anti-carry", "ranged-poke", "summon"].includes(tag)) ||
+      ["Arc Warden", "Beastmaster", "Drow Ranger", "Sniper", "Phantom Assassin", "Troll Warlord", "Ursa"].includes(enemy.name)
+    );
+    if (role === "Position 3") required.push(requiredItem("crimson_guard", `Strong aura choice because ${listNames(physical)} pressures with physical hits, summons, or chip damage.`));
+    if (["Position 4", "Position 5"].includes(role)) required.push(requiredItem("pavise", `Cheap save when ${listNames(physical)} threatens your core with physical burst.`));
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("butterfly", `Late defensive damage option if ${listNames(physical)} does not already have reliable true strike.`));
   }
   if (context.hasIllusions) {
-    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("mjollnir", "Best carry-side answer when illusion waves must be cleared quickly."));
-    required.push(requiredItem("shivas_guard", "Armor, anti-heal, and AoE control against illusion or summon pressure."));
+    const illusions = enemyNamesBy(context, (enemy) => enemy.tags.includes("illusion") || ["Phantom Lancer", "Naga Siren", "Terrorblade", "Chaos Knight"].includes(enemy.name));
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("mjollnir", `Needed when ${listNames(illusions)} floods fights or lanes with illusions.`));
+    required.push(requiredItem("shivas_guard", `Armor and AoE control are valuable because ${listNames(illusions)} creates illusion or summon pressure.`));
   }
   if (context.hasHealing) {
-    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("eye_of_skadi", "High priority against healing, lifesteal, and long sustain fights."));
-    required.push(requiredItem("spirit_vessel", "Team needs one Vessel if enemy regen/heal is the core problem."));
+    const healers = enemyNamesBy(context, (enemy) => enemy.tags.some((tag) => ["sustain", "save"].includes(tag)) || ["Abaddon", "Alchemist", "Huskar", "Necrophos", "Io", "Dazzle", "Oracle"].includes(enemy.name));
+    if (["Position 1", "Position 2"].includes(role)) required.push(requiredItem("eye_of_skadi", `High priority if fights are long because ${listNames(healers)} brings healing, lifesteal, or sustain.`));
+    required.push(requiredItem("spirit_vessel", `Your team should consider one Vessel if ${listNames(healers)} is the main regen/heal problem.`));
   }
   if (context.hasEvasion) {
-    required.push(requiredItem("monkey_king_bar", "Needed when evasion prevents your physical damage from connecting."));
+    const evasion = enemyNamesBy(context, (enemy) => ["Phantom Assassin", "Windranger", "Brewmaster"].includes(enemy.name) || enemy.tags.includes("evasion"));
+    required.push(requiredItem("monkey_king_bar", `Needed when ${listNames(evasion)} prevents physical damage from connecting.`));
   }
   if (!required.length) {
-    required.push(requiredItem("black_king_bar", "Default safety item if enemy disable or burst becomes the main issue."));
+    const enemies = context.enemies.map((enemy) => enemy.name);
+    required.push(requiredItem("black_king_bar", `No single forced item is detected yet; keep BKB in mind only if ${listNames(enemies)} turns fights into disable or burst chains.`));
   }
   return dedupeRequired(required).slice(0, 6).map((item) => ({
     ...item,
@@ -319,6 +349,14 @@ function requiredItem(slug, reason) {
   return { slug, reason };
 }
 
+function enemyNamesBy(context, predicate) {
+  return context.enemies.filter(predicate).map((enemy) => enemy.name);
+}
+
+function listNames(names) {
+  return names.length ? names.join(", ") : "the enemy draft";
+}
+
 function dedupeRequired(items) {
   const bySlug = new Map();
   for (const item of items) if (!bySlug.has(item.slug)) bySlug.set(item.slug, item);
@@ -349,20 +387,16 @@ function noteFor(slug, hero, context, adjustments) {
 }
 
 function phaseReason(phase, hero, context, profile) {
-  const enemyNames = context.enemies.map((enemy) => enemy.name).join(", ") || "the current enemy draft";
-  const pressure = pressureLabel(context);
-  if (phase === "starting") return `${hero.name} starts for its own lane pattern into ${enemyNames}, not from a generic role template.`;
-  if (phase === "lane") return context.hasHighMagic ? `Lane items account for spell pressure from ${enemyNames}.` : `Lane items support ${hero.name}'s first stable timing against ${pressure}.`;
+  if (phase === "starting") return `${hero.name} starts from its own lane pattern, not from a generic role template.`;
+  if (phase === "lane") return `Lane items support ${hero.name}'s first stable timing.`;
   if (phase === "early") return profile.identity;
-  if (phase === "core") return `${hero.name}'s core is selected from its hero profile, then adjusted for ${pressure}.`;
-  if (phase === "situational") return `Situational items are chosen because ${enemyNames} changes the disable, damage, sustain, illusion, or evasion problem.`;
-  return `Luxury items convert the game after ${hero.name} has solved ${pressure}.`;
+  if (phase === "core") return `${hero.name}'s core is selected from its hero profile and high-rank build pattern.`;
+  if (phase === "situational") return `These are common high-rank situational options for ${hero.name}; the next section explains what this enemy draft specifically demands.`;
+  return `Luxury items convert the game after ${hero.name}'s main timing is complete.`;
 }
 
 function phaseHeadline(phase, profile, context) {
-  if (phase === "situational" && (context.hasSilence || context.hasIllusions || context.hasHighMagic || context.hasEvasion)) {
-    return "Matchup-dependent";
-  }
+  if (phase === "situational") return "Hero situational pool";
   return profile.identity;
 }
 
@@ -396,7 +430,13 @@ function titleItem(slug) {
     urn_of_shadows: "Urn of Shadows",
     rod_of_atos: "Rod of Atos",
     aeon_disk: "Aeon Disk",
-    travel_boots: "Boots of Travel"
+    travel_boots: "Boots of Travel",
+    moon_shard: "Moon Shard",
+    swift_blink: "Swift Blink",
+    rapier: "Divine Rapier",
+    ghost: "Ghost Scepter",
+    gleipnir: "Gleipnir",
+    crystalis: "Crystalys"
   };
   return names[slug] || slug.split("_").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
 }

@@ -22,21 +22,12 @@ export function scoreHero(hero, draft) {
   if (pickedSet(draft).has(hero.name)) return null;
 
   const details = [];
-  let score = 52 + hero.patchScore * 0.8;
+  const breakdown = enemyBreakdown(hero, draft);
+  const matchupAverage = breakdown.length ? average(breakdown.map((row) => row.score)) : 55;
+  const patchComponent = Math.min(92, 45 + hero.patchScore * 4.5);
+  let score = matchupAverage * 0.8 + patchComponent * 0.2;
 
-  for (const enemy of draft.enemies) {
-    const counter = COUNTERS[enemy]?.[hero.name];
-    if (counter) {
-      score += counter.advantage * 0.9 + counter.lane * 0.35 + counter.intensity * 1.25;
-      details.push(`${counter.summary} vs ${enemy}`);
-    } else {
-      score += enemyOnlyTagScore(hero, enemy);
-    }
-    if (counterRuleFor(enemy, hero.name)) {
-      score += 5.5;
-      details.push(`${hero.name} is a known counter-pick pattern into ${enemy}.`);
-    }
-  }
+  details.push(...breakdown.map((row) => row.reason).filter(Boolean).slice(0, 4));
 
   if (draft.philosophy === "full") {
     for (const ally of draft.allies) {
@@ -53,14 +44,15 @@ export function scoreHero(hero, draft) {
     details.push(...balance.details);
   }
 
-  score += roleFit(hero, draft.role);
-  score -= draft.enemies.length * 0.8;
+  score += roleFit(hero, draft.role) * 0.45;
+  score += rolePriorityScore(hero, draft.role);
+  score -= draft.enemies.length * 0.25;
 
   return {
     hero,
     score: finalizeScore(score),
     stars: scoreToStars(finalizeScore(score)),
-    enemyBreakdown: enemyBreakdown(hero, draft),
+    enemyBreakdown: breakdown,
     details: details.slice(0, 5),
     analysis: explainHero(hero, draft, details)
   };
@@ -183,52 +175,118 @@ function roleFit(hero, role) {
   return roleWeights[role].reduce((total, tag) => total + (hero.tags.includes(tag) ? 1.8 : 0), 0);
 }
 
+function rolePriorityScore(hero, role) {
+  if (hero.roles[0] === role) return 4;
+  return hero.roles.includes(role) ? -4 : 0;
+}
+
 function finalizeScore(rawScore) {
   if (rawScore <= 82) return Math.max(0, Math.round(rawScore));
   return Math.min(94, Math.round(82 + (rawScore - 82) * 0.18));
 }
 
 function scoreToStars(score) {
-  if (score >= 82) return 5;
-  if (score >= 68) return 4;
-  if (score >= 54) return 3;
-  if (score >= 40) return 2;
+  if (score >= 76) return 5;
+  if (score >= 60) return 4;
+  if (score >= 44) return 3;
+  if (score >= 28) return 2;
   return 1;
 }
 
 function enemyBreakdown(hero, draft) {
   return (draft.enemies || []).map((enemyName) => {
     const enemy = getHero(enemyName);
-    const counter = COUNTERS[enemyName]?.[hero.name];
-    let score = 45;
-    const reasons = [];
-    if (counter) {
-      score += counter.advantage * 2.2 + counter.lane * 0.8 + counter.intensity * 5;
-      reasons.push(counter.summary);
-    }
-    if (counterRuleFor(enemyName, hero.name)) {
-      score += 18;
-      reasons.push(`${hero.name} is a known counter pattern into ${enemyName}.`);
-    }
-    if (enemy) {
-      if (enemy.vulnerableTo.some((tag) => hero.tags.includes(tag))) {
-        score += 11;
-        reasons.push(`${hero.name} attacks ${enemyName}'s weak point: ${enemy.vulnerableTo.filter((tag) => hero.tags.includes(tag)).join(", ")}.`);
-      }
-      if (hero.answers.some((tag) => enemy.tags.includes(tag))) {
-        score += 9;
-        reasons.push(`${hero.name} answers ${enemyName}'s ${enemy.tags.filter((tag) => hero.answers.includes(tag)).join(", ")} pattern.`);
-      }
-      if (enemy.tags.includes("illusion") && ["teamfight", "wave-clear", "burst"].some((tag) => hero.tags.includes(tag))) score += 8;
-      if (enemy.tags.includes("mobility") && hero.tags.includes("disable")) score += 7;
-      if (enemy.tags.includes("frontline") && hero.tags.includes("anti-carry")) score += 7;
-    }
+    const matchup = matchupScoreAgainst(hero, enemyName, enemy);
     return {
       enemy: enemyName,
-      score: Math.max(1, Math.min(100, Math.round(score))),
-      reason: reasons[0] || `${hero.name} has a ${Math.round(score)}/100 matchup profile into ${enemyName}.`
+      score: matchup.score,
+      reason: matchup.reason
     };
   });
+}
+
+function matchupScoreAgainst(hero, enemyName, enemy) {
+  const reasons = [];
+  let score = 50;
+  const counter = COUNTERS[enemyName]?.[hero.name];
+
+  if (counter) {
+    score += counter.advantage * 1.8 + counter.lane * 0.75 + counter.intensity * 4.5;
+    reasons.push(counter.summary);
+  }
+  if (counterRuleFor(enemyName, hero.name)) {
+    score += 24;
+    reasons.push(`${hero.name} is a listed counter-pick pattern into ${enemyName}.`);
+  }
+  if (counterRuleFor(hero.name, enemyName)) {
+    score -= 24;
+    reasons.push(`${enemyName} is a listed counter threat against ${hero.name}.`);
+  }
+
+  if (enemy) {
+    const attackedWeaknesses = enemy.vulnerableTo.filter((tag) => hero.tags.includes(tag) || hero.answers.includes(tag));
+    const answeredPatterns = enemy.tags.filter((tag) => hero.answers.includes(tag));
+    const enemyThreats = enemy.tags.filter((tag) => hero.vulnerableTo.includes(tag));
+
+    if (attackedWeaknesses.length) {
+      score += 6 + attackedWeaknesses.length * 4;
+      reasons.push(`${hero.name} attacks ${enemyName}'s weak point: ${attackedWeaknesses.join(", ")}.`);
+    }
+    if (answeredPatterns.length) {
+      score += 5 + answeredPatterns.length * 3;
+      reasons.push(`${hero.name} answers ${enemyName}'s ${answeredPatterns.join(", ")} pattern.`);
+    }
+    if (enemyThreats.length) {
+      score -= 7 + enemyThreats.length * 4;
+      reasons.push(`${enemyName} pressures ${hero.name}'s weakness: ${enemyThreats.join(", ")}.`);
+    }
+    if (enemy.tags.includes("illusion")) {
+      if (["teamfight", "wave-clear", "burst", "magical"].some((tag) => hero.tags.includes(tag))) score += 10;
+      else score -= 12;
+    }
+    if (enemy.tags.includes("mobility") && hero.tags.includes("disable")) score += 7;
+    if (enemy.tags.includes("frontline") && hero.tags.includes("anti-carry")) score += 8;
+    if (enemy.tags.includes("ranged-poke") && hero.vulnerableTo.includes("kite")) score -= 10;
+  }
+
+  score += specialMatchupAdjustment(hero, enemyName, enemy, reasons);
+  const finalScore = Math.max(12, Math.min(94, Math.round(score)));
+  return {
+    score: finalScore,
+    reason: reasons[0] || `${hero.name} has a ${finalScore}/100 matchup profile into ${enemyName}.`
+  };
+}
+
+function specialMatchupAdjustment(hero, enemyName, enemy, reasons) {
+  let score = 0;
+  if (enemyName === "Ancient Apparition" && ["Alchemist", "Huskar", "Necrophos", "Morphling", "Lifestealer"].includes(hero.name)) {
+    score -= 22;
+    reasons.push(`${enemyName} directly punishes ${hero.name}'s sustain/healing game plan.`);
+  }
+  if (["Batrider", "Beastmaster", "Doom"].includes(enemyName) && ["Alchemist", "Sniper", "Drow Ranger", "Medusa"].includes(hero.name)) {
+    score -= 14;
+    reasons.push(`${enemyName} has single-target control that can force ${hero.name} to buy defensive items early.`);
+  }
+  if (enemyName === "Arc Warden" && ["Phantom Lancer", "Naga Siren", "Broodmother", "Meepo", "Leshrac"].includes(hero.name)) {
+    score += 24;
+    reasons.push(`${hero.name} is a strong high-rank pattern into Arc Warden because it pressures clone-based split map play.`);
+  }
+  if (enemyName === "Abaddon" && ["Axe", "Doom", "Viper", "Slark", "Outworld Destroyer", "Lina", "Lion"].includes(hero.name)) {
+    score += 24;
+    reasons.push(`${hero.name} is a strong pattern into Abaddon because it limits Borrowed Time or kills around it.`);
+  }
+  if (enemyName === "Beastmaster" && ["Phantom Lancer", "Naga Siren", "Broodmother", "Lycan"].includes(hero.name)) {
+    score -= 12;
+    reasons.push(`${enemyName}'s vision and Roar can punish ${hero.name}'s side-lane pressure.`);
+  }
+  if (enemy?.tags.includes("disable") && hero.vulnerableTo.includes("disable")) score -= 6;
+  if (enemy?.tags.includes("burst") && hero.vulnerableTo.includes("burst")) score -= 6;
+  return score;
+}
+
+function average(values) {
+  if (!values.length) return 0;
+  return values.reduce((total, value) => total + value, 0) / values.length;
 }
 
 function tagSet(names) {

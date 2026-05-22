@@ -1,10 +1,15 @@
-const CACHE_NAME = "dota-draft-assistant-v9";
+const CACHE_NAME = "dota-draft-assistant-v10";
 const APP_SHELL = [
   "/",
   "/index.html",
   "/src/app.js",
   "/src/styles.css",
   "/src/draft-data.js",
+  "/src/generated/hero-catalog.js",
+  "/src/data/canonical-roles.js",
+  "/src/data/counter-pick-rules.js",
+  "/src/data/hero-build-archetypes.js",
+  "/src/data/protracker-builds.js",
   "/src/engine/recommendation-engine.js",
   "/src/services/assets.js",
   "/src/services/builds.js"

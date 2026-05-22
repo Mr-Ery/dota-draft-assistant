@@ -59,6 +59,8 @@ export function scoreHero(hero, draft) {
   return {
     hero,
     score: finalizeScore(score),
+    stars: scoreToStars(finalizeScore(score)),
+    enemyBreakdown: enemyBreakdown(hero, draft),
     details: details.slice(0, 5),
     analysis: explainHero(hero, draft, details)
   };
@@ -184,6 +186,49 @@ function roleFit(hero, role) {
 function finalizeScore(rawScore) {
   if (rawScore <= 82) return Math.max(0, Math.round(rawScore));
   return Math.min(94, Math.round(82 + (rawScore - 82) * 0.18));
+}
+
+function scoreToStars(score) {
+  if (score >= 82) return 5;
+  if (score >= 68) return 4;
+  if (score >= 54) return 3;
+  if (score >= 40) return 2;
+  return 1;
+}
+
+function enemyBreakdown(hero, draft) {
+  return (draft.enemies || []).map((enemyName) => {
+    const enemy = getHero(enemyName);
+    const counter = COUNTERS[enemyName]?.[hero.name];
+    let score = 45;
+    const reasons = [];
+    if (counter) {
+      score += counter.advantage * 2.2 + counter.lane * 0.8 + counter.intensity * 5;
+      reasons.push(counter.summary);
+    }
+    if (counterRuleFor(enemyName, hero.name)) {
+      score += 18;
+      reasons.push(`${hero.name} is a known counter pattern into ${enemyName}.`);
+    }
+    if (enemy) {
+      if (enemy.vulnerableTo.some((tag) => hero.tags.includes(tag))) {
+        score += 11;
+        reasons.push(`${hero.name} attacks ${enemyName}'s weak point: ${enemy.vulnerableTo.filter((tag) => hero.tags.includes(tag)).join(", ")}.`);
+      }
+      if (hero.answers.some((tag) => enemy.tags.includes(tag))) {
+        score += 9;
+        reasons.push(`${hero.name} answers ${enemyName}'s ${enemy.tags.filter((tag) => hero.answers.includes(tag)).join(", ")} pattern.`);
+      }
+      if (enemy.tags.includes("illusion") && ["teamfight", "wave-clear", "burst"].some((tag) => hero.tags.includes(tag))) score += 8;
+      if (enemy.tags.includes("mobility") && hero.tags.includes("disable")) score += 7;
+      if (enemy.tags.includes("frontline") && hero.tags.includes("anti-carry")) score += 7;
+    }
+    return {
+      enemy: enemyName,
+      score: Math.max(1, Math.min(100, Math.round(score))),
+      reason: reasons[0] || `${hero.name} has a ${Math.round(score)}/100 matchup profile into ${enemyName}.`
+    };
+  });
 }
 
 function tagSet(names) {

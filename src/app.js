@@ -3,6 +3,7 @@ import { draftHealth, finalAnalysis, recommendations } from "./engine/recommenda
 import {
   abilityIconCandidates,
   dotabuffHeroUrl,
+  dota2ProTrackerHeroUrl,
   fallbackAttribute,
   heroAbilities,
   heroPortraitCandidates,
@@ -224,12 +225,26 @@ function renderRecommendation(rec, index) {
       <div>
         <div class="rec-title">
           <h3>${rec.hero.name}</h3>
-          <strong>${rec.score}</strong>
+          ${renderStars(rec.stars)}
         </div>
         <p>${rec.details[0] || rec.hero.summary}</p>
+        ${renderEnemyBreakdown(rec.enemyBreakdown)}
         <div class="tagline">${rec.hero.tags.slice(0, 5).join(" | ")}</div>
       </div>
     </button>
+  `;
+}
+
+function renderStars(stars) {
+  return `<div class="stars" aria-label="${stars} of 5 stars">${Array.from({ length: 5 }).map((_, index) => `<span class="${index < stars ? "filled" : ""}">★</span>`).join("")}</div>`;
+}
+
+function renderEnemyBreakdown(rows = []) {
+  if (!rows.length) return "";
+  return `
+    <div class="enemy-breakdown">
+      ${rows.map((row) => `<span>vs ${row.enemy}: <strong>${row.score}/100</strong></span>`).join("")}
+    </div>
   `;
 }
 
@@ -268,10 +283,6 @@ function renderFinal() {
         <div class="final-copy">
           <p class="eyebrow">${roleMap[state.role]} final analysis</p>
           <h1>${report.hero.name}</h1>
-          <div class="hero-score">
-            <span>Best Hero Score</span>
-            <strong>${report.score}</strong>
-          </div>
           <p>${report.analysis}</p>
           ${abilities.length ? `<div class="spell-strip">${abilities.map((ability) => assetImg(abilityIconCandidates(ability), ability.replaceAll("_", " "))).join("")}</div>` : ""}
         </div>
@@ -281,7 +292,10 @@ function renderFinal() {
         <div class="section-title">
           <p class="eyebrow">Hero-specific matchup build</p>
           <h2>Dynamic Item Build</h2>
-          <a class="source-link" href="${dotabuffHeroUrl(report.hero.name)}" target="_blank" rel="noreferrer">Dotabuff ${report.hero.name}</a>
+          <div class="source-links">
+            <a class="source-link" href="${dota2ProTrackerHeroUrl(report.hero.name)}" target="_blank" rel="noreferrer">Dota2ProTracker ${report.hero.name}</a>
+            <a class="source-link" href="${dotabuffHeroUrl(report.hero.name)}" target="_blank" rel="noreferrer">Dotabuff ${report.hero.name}</a>
+          </div>
         </div>
         <div class="build-grid">
           ${build.map((phase) => `

@@ -142,6 +142,10 @@ export function dotabuffHeroUrl(name) {
   return `https://www.dotabuff.com/heroes/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
 }
 
+export function dota2ProTrackerHeroUrl(name) {
+  return `https://dota2protracker.com/hero/${encodeURIComponent(name)}`;
+}
+
 function unique(items) {
   return [...new Set(items)];
 }
